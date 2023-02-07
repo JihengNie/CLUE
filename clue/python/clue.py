@@ -45,6 +45,13 @@ for i in range(playerNum):
 print('Players:', players)
 
 # Functions
+# def enteringPlayerCard(playerName, cards):
+#   numOfCards = int(input("Enter number of cards you have: "))
+#   cards
+#   for i in range(numOfCards):
+#     input("Enter card " + str(i) + "'s name")
+
+
 def revealingCards(cardType, cardName, playerName, cards):
   cards[cardType][cardName]["revealed"] = True
   cards[cardType][cardName]["owned"] = playerName
@@ -95,7 +102,7 @@ while gameStatus:
       print(remainingCards["rooms"])
       cardName = input("Choose a room: ")
     else:
-      break
+      continue
     print(players)
     playerName = input("Enter player name: ")
     revealingCards(cardType, cardName, playerName, cards)
