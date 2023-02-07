@@ -45,11 +45,22 @@ for i in range(playerNum):
 print('Players:', players)
 
 # Functions
-# def enteringPlayerCard(playerName, cards):
-#   numOfCards = int(input("Enter number of cards you have: "))
-#   cards
-#   for i in range(numOfCards):
-#     input("Enter card " + str(i) + "'s name")
+def enteringPlayerCard(playerName, cards):
+  numOfCards = int(input("Enter number of cards you have: "))
+  playerHand = []
+  for i in range(numOfCards):
+    tempCard = input("Enter card " + str(i + 1) + ": ")
+    playerHand.append(tempCard)
+  for cardTypes in cards:
+    for items in cards[cardTypes]:
+      if items in playerHand:
+        cards[cardTypes][items]["revealed"] = True
+        cards[cardTypes][items]["owned"] = playerName
+        playerHand.remove(items)
+  if len(playerHand) > 0:
+    return playerHand
+  else:
+    return "All cards entered successfully"
 
 
 def revealingCards(cardType, cardName, playerName, cards):
@@ -84,7 +95,13 @@ roundCounter = 0
 
 while gameStatus:
   print("\nRound's Passed: " + str(roundCounter))
-  action = input("Choose an action: \n  1. Reveal a card \n  2. Displaying remaining cards \n  3. End Game \n")
+  inputMenu = """Choose an action:
+  1. Reveal a card
+  2. Enter player hand
+  3. Displaying remaining cards
+  0. End Game
+    """
+  action = input(inputMenu)
   remainingCards = {
     "characters": displayRevealedCardsByType('characters', cards),
     "weapons" : displayRevealedCardsByType('weapons', cards),
@@ -108,11 +125,15 @@ while gameStatus:
     revealingCards(cardType, cardName, playerName, cards)
     roundCounter += 1
   elif action == "2":
+    print(players)
+    playerName = input("Enter player name: ")
+    print(enteringPlayerCard(playerName, cards))
+  elif action == "3":
     print("characters", remainingCards["characters"])
     print("weapons", remainingCards["weapons"])
     print("rooms", remainingCards["rooms"])
     roundCounter += 1
-  elif action == "3":
+  elif action == "0":
     gameStatus = False
   else:
     print("Try again")
