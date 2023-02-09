@@ -62,7 +62,6 @@ def enteringPlayerCard(playerName, cards):
   else:
     return "All cards entered successfully"
 
-
 def revealingCards(cardType, cardName, playerName, cards):
   cards[cardType][cardName]["revealed"] = True
   cards[cardType][cardName]["owned"] = playerName
@@ -89,9 +88,51 @@ def displayAllPlayerOwnedCards(players, cards):
     playerOwnedCards[names] = displayOwnedCards(names, cards)
   return playerOwnedCards
 
+def storingRoundGuesses(cards, roundGuesses):
+  print("Players:", players)
+  whoGuess = input("Enter who guessed: ")
+
+  print(cards["rooms"].keys())
+  roomGuess = input("Enter room: ")
+
+  print(cards["characters"].keys())
+  characterGuess = input("Enter character: ")
+
+  print(cards["weapons"].keys())
+  weaponGuess = input("Enter weapon: ")
+
+  print("Players:", players)
+  whoAnswered = input("Enter who answered: ")
+
+  roundInformation =  {
+    "whoGuessed":whoGuess,
+    "whoAnsered": whoAnswered,
+    "room": None,
+    "character": None,
+    "weapon": None
+  }
+  if not cards["rooms"][roomGuess]["owned"]:
+    try:
+      roundInformation[roundNumber]["room"] = roomGuess
+    except:
+      print("Room not found or room already revealed")
+  if not cards["characters"][characterGuess]["owned"]:
+    try:
+      roundInformation[roundNumber]["character"] = characterGuess
+    except:
+      print("Character not found or character already revealed")
+
+  if not cards["weapons"][weaponGuess]["owned"]:
+    try:
+      roundInformation[roundNumber]["weapon"] = weaponGuess
+    except:
+      print("Weapon not found or weapon already revealed")
+  return roundInformation
+
 # Playing the game
 gameStatus = True
 roundCounter = 0
+roundGuesses = []
 
 while gameStatus:
   print("\nRound's Passed: " + str(roundCounter))
@@ -99,6 +140,7 @@ while gameStatus:
   1. Reveal a card
   2. Enter player hand
   3. Displaying remaining cards
+  4. Enter a guess
   0. End Game
     """
   action = input(inputMenu)
@@ -120,12 +162,12 @@ while gameStatus:
       cardName = input("Choose a room: ")
     else:
       continue
-    print(players)
+    print("Players:", players)
     playerName = input("Enter player name: ")
     revealingCards(cardType, cardName, playerName, cards)
     roundCounter += 1
   elif action == "2":
-    print(players)
+    print("Players:", players)
     playerName = input("Enter player name: ")
     print(enteringPlayerCard(playerName, cards))
   elif action == "3":
@@ -133,8 +175,11 @@ while gameStatus:
     print("weapons", remainingCards["weapons"])
     print("rooms", remainingCards["rooms"])
     roundCounter += 1
+  elif action == "4":
+    roundGuesses.append(storingRoundGuesses(cards, roundGuesses, roundCounter))
+    print(roundGuesses)
   elif action == "0":
     gameStatus = False
   else:
     print("Try again")
-  print(displayAllPlayerOwnedCards(players, cards))
+  print("Player's current cards: ",displayAllPlayerOwnedCards(players, cards))
