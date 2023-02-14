@@ -8,7 +8,7 @@ characters = {
   "Scarlett": { "revealed": False, "owned": None }
 }
 weapons = {
-  "knife": { "revealed": False, "owned": None },
+  "dagger": { "revealed": False, "owned": None },
   "revolver": { "revealed": False, "owned": None },
   "rope": { "revealed": False, "owned": None },
   "wrench": { "revealed": False, "owned": None },
@@ -45,6 +45,9 @@ for i in range(playerNum):
 print('Players:', players)
 
 # Functions
+# def notOwnedCards(playerName, cards):
+
+
 def enteringPlayerCard(playerName, cards):
   numOfCards = int(input("Enter number of cards you have: "))
   playerHand = []
@@ -176,7 +179,7 @@ while gameStatus:
     print("rooms", remainingCards["rooms"])
     roundCounter += 1
   elif action == "4":
-    roundGuesses.append(storingRoundGuesses(cards, roundGuesses, roundCounter))
+    roundGuesses.append(storingRoundGuesses(cards, roundGuesses))
     print(roundGuesses)
   elif action == "0":
     gameStatus = False
