@@ -64,10 +64,14 @@ selectionObject = {
 
 # Functions
 
-def convertStrToInt(list):
+def convertStrToInt(list, rooms):
   outputList = []
+  validNumListSix = ["1", "2", "3", "4", "5", "6"]
+  validNumListNine= ["1", "2", "3", "4", "5", "6", "7", "8","9"]
+  validList = validNumListSix if rooms == False else validNumListNine
   for items in list:
-    outputList.append(int(items))
+    if items in validList:
+      outputList.append(int(items))
   return outputList
 
 def initializationPlayers(players):
@@ -80,14 +84,13 @@ def initializationPlayers(players):
 
 def enterPlayerHand(players, cards, selectionObject):
   selectedCardsList = []
-
   print("Players:", selectionObject["players"])
   selectedPlayer = int(input("Enter the number for the player: "))
 
   print("Character Cards:", selectionObject["characters"])
   selectedCharacters = input("Enter the number assoicated with the character cards seprated by commas: ").replace(" ", "")
   if selectedCharacters != "":
-    charactersList = convertStrToInt(selectedCharacters.split(","))
+    charactersList = convertStrToInt(selectedCharacters.split(","), False)
     for items in charactersList:
       selectedCardsList.append(selectionObject["characters"][items])
       del selectionObject["characters"][items]
@@ -95,16 +98,16 @@ def enterPlayerHand(players, cards, selectionObject):
   print("Weapons Cards:", selectionObject["weapons"])
   selectedWeapons = input("Enter the number assoicated with the weapons cards seprated by commas: ")
   if selectedWeapons != "":
-    weaponsList = convertStrToInt(selectedWeapons.split(","))
-    for items in charactersList:
+    weaponsList = convertStrToInt(selectedWeapons.split(","), False)
+    for items in weaponsList:
       selectedCardsList.append(selectionObject["weapons"][items])
       del selectionObject["weapons"][items]
 
   print("Room Cards:", selectionObject["rooms"])
   selectedRooms = input("Enter the number assoicated with the rooms cards seprated by commas: ")
   if selectedRooms != "":
-    roomsList = convertStrToInt(selectedRooms.split(","))
-    for items in charactersList:
+    roomsList = convertStrToInt(selectedRooms.split(","), True)
+    for items in roomsList:
       selectedCardsList.append(selectionObject["rooms"][items])
       del selectionObject["rooms"][items]
 
@@ -128,21 +131,27 @@ def viewPlayerOwnedCards(players, cards):
   return playerHand
 
 def enterRoundGuess(selectionObject, players, rounds):
-  ### --------------------Problem: People can guess cards that is already known. Solution: Give user an option to select a None card-----------------------------------###
   print("Please enter the guess.\n")
   # Card Selection
-  print(selectionObject["characters"])
-  selectedCharacter = int(input("Enter the number for the character: "))
+  validNumListSix = ["1", "2", "3", "4", "5", "6"]
+  validNumListNine= ["1", "2", "3", "4", "5", "6", "7", "8","9"]
 
-  print(selectionObject["weapons"])
-  selectedWeapon = int(input("Enter the number for the weapon: "))
+  print(selectionObject["characters"], "or 0: None")
+  characterInputCheck = input("Enter the number for the character: ")
+  selectedCharacter = int(characterInputCheck) if characterInputCheck != "0" and characterInputCheck in validNumListSix else None
 
-  print(selectionObject["rooms"])
-  selectedRoom = int(input("Enter the number for the room: "))
+  print(selectionObject["weapons"], "or 0: None")
+  weaponInputCheck = input("Enter the number for the weapon: ")
+  selectedWeapon = int(weaponInputCheck) if weaponInputCheck != "0" and characterInputCheck in validNumListSix  else None
+
+  print(selectionObject["rooms"], "or 0: None")
+  roomInputCheck = input("Enter the number for the room: ")
+  selectedRoom = int(roomInputCheck) if roomInputCheck != "0" and characterInputCheck in validNumListNine  else None
+
   cardSelected = [
-    selectionObject["characters"][selectedCharacter],
-    selectionObject["weapons"][selectedWeapon],
-    selectionObject["rooms"][selectedRoom],
+    None if selectedCharacter == None else selectionObject["characters"][selectedCharacter],
+    None if selectedWeapon == None else selectionObject["weapons"][selectedWeapon],
+    None if selectedRoom == None else selectionObject["rooms"][selectedRoom],
   ]
   # Round guess
   roundGuess = {
@@ -152,7 +161,7 @@ def enterRoundGuess(selectionObject, players, rounds):
 
   stillGuessing = True
   while stillGuessing:
-    guessCheck = input("Are you still guessing? y/n: ")
+    guessCheck = input("\nDo you want to add the guess to a player's potential or not owned list? y/n: ")
     if guessCheck == "y":
       # Player selection
       print(selectionObject["players"])
@@ -163,7 +172,7 @@ def enterRoundGuess(selectionObject, players, rounds):
       if shownCard == "y":
         roundGuess["whoAnswered"] = selecterPlayer
         for card in cardSelected:
-          if card not in players[selecterPlayer]["potentialCards"]:
+          if card not in players[selecterPlayer]["potentialCards"] and card != None:
             players[selecterPlayer]["potentialCards"].append(card)
       else:
         for card in cardSelected:
@@ -178,6 +187,13 @@ def displayingRemainingCards(selectionObject):
   print("Characters:", selectionObject["characters"])
   print("Weapons:", selectionObject["weapons"])
   print("Rooms:", selectionObject["rooms"])
+
+def displayingPotentialCards(players):
+  for player in players:
+    print(player)
+    print("   PotentialCards:", players[player]["potentialCards"])
+    print("   notOwned:", players[player]["notOwned"])
+
 
 # "player0": {"potentialCards":["Dagger", "Ball Room"], "notOwned": ["Study", "Lounge"] },
 
@@ -195,9 +211,10 @@ while gameStatus:
   inputMenu = """\nChoose an action:
   1. Enter player hand
   2. Enter a card player owns
-  3. Displaying player cards
-  4. Enter guesses
+  3. Enter guesses
+  4. Displaying player cards
   5. Display remaining cards
+  6. Display player potential cards
   0. End Game
     """
   action = input(inputMenu)
@@ -208,10 +225,12 @@ while gameStatus:
   elif action == "2":
     enterPlayerHand(players, cards, selectionObject)
   elif action == "3":
-    viewPlayerOwnedCards(players, cards)
-  elif action == "4":
     enterRoundGuess(selectionObject, players, rounds)
-  elif action =="5":
+  elif action == "4":
+    viewPlayerOwnedCards(players, cards)
+  elif action == "5":
     displayingRemainingCards(selectionObject)
+  elif action == "6":
+    displayingPotentialCards(players)
   else:
     print("Try again")
